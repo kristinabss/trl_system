@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Система определения УГТ — Прототип</title>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-title">УГТ Система</div>
+    <div class="logo-sub">Оценка технологической готовности</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Основное</div>
+    <div class="nav-item active" onclick="showPage('dashboard', this)">
+      <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Дашборд
+    </div>
+    <div class="nav-item" onclick="showPage('assess', this)">
+      <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Оценка УГТ
+    </div>
+    <div class="nav-item" onclick="showPage('catalog', this)">
+      <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      Каталог технологий
+      <span class="nav-badge">12</span>
+    </div>
+    <div class="nav-section" style="margin-top:8px;">Аналитика</div>
+    <div class="nav-item" onclick="showPage('model', this)">
+      <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Модель ML
+    </div>
+    <div class="nav-item" onclick="showPage('testing', this)">
+      <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Тестирование
+    </div>
+    <div class="nav-item" onclick="showPage('methodology', this)">
+      <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Методология
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    Беляева К.С. &nbsp;·&nbsp; ВШЭ Пермь 2026
+  </div>
+</aside>
+
+<!-- Main content -->
+<div class="main">
+  <div class="topbar">
+    <span class="topbar-path" id="topbar-path">Дашборд</span>
+    <div class="topbar-right">
+      <button class="btn" onclick="showPage('assess', document.querySelector('[onclick*=assess]'))">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Новая оценка
+      </button>
+      <button class="btn btn-primary">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Экспорт
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="page active" id="page-dashboard">
+      <div style="margin-bottom: 24px;">
+        <h1 style="font-size:20px; font-weight:700; margin-bottom:4px;">Портфель технологий предприятия</h1>
+        <p style="font-size:13px; color:var(--text2);">Агрегированная информация по уровням готовности · Период: 2020–2024</p>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Технологий в портфеле</div>
+          <div class="kpi-value" style="color:var(--accent);">12</div>
+          <div class="kpi-delta up">↑ +2 за квартал</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Средний УГТ</div>
+          <div class="kpi-value" style="color:var(--green);">6.4</div>
+          <div class="kpi-delta up">↑ +0.7 за квартал</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Готовы к внедрению (УГТ ≥ 8)</div>
+          <div class="kpi-value" style="color:var(--amber);">3</div>
+          <div class="kpi-delta neutral">→ без изменений</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Точность модели ML</div>
+          <div class="kpi-value" style="color:var(--purple);">84.7%</div>
+          <div class="kpi-delta up">↑ Градиентный бустинг</div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Распределение по уровням УГТ</div>
+              <div class="section-sub">Тестовый датасет: 450 объектов</div>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chartDistrib"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Динамика среднего УГТ</div>
+              <div class="section-sub">По кварталам 2022–2024</div>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chartDynamic"></canvas>
+          </div>
+        </div>
+        <div class="chart-card chart-card-wide">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Отраслевой срез датасета (450 объектов)</div>
+              <div class="section-sub">Машиностроение · Электроника · Авиастроение · Химия</div>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chartSectors"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div>
+          <div class="section-title">Приоритетные технологии</div>
+          <div class="section-sub">Технологии с наибольшим прогрессом или готовые к внедрению</div>
+        </div>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Технология</th>
+              <th>Отрасль</th>
+              <th>УГТ</th>
+              <th>Уверенность</th>
+              <th>Прогресс</th>
+              <th>Статус</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Аддитивное производство Ti-деталей</td>
+              <td><span class="badge badge-info">Авиастроение</span></td>
+              <td><span class="trl-badge trl-6">6</span></td>
+              <td><span style="font-family:var(--mono); font-size:12px;">78%</span></td>
+              <td><div class="trl-progress-row"><div class="trl-bar-wrap"><div class="trl-bar-fill" style="width:67%; background:var(--amber);"></div></div><span style="font-size:11px; color:var(--text3);">6/9</span></div></td>
+              <td><span class="badge badge-warning">Разработка</span></td>
+            </tr>
+            <tr>
+              <td>Термообработка стальных сплавов</td>
+              <td><span class="badge badge-success">Машиностроение</span></td>
+              <td><span class="trl-badge trl-8">8</span></td>
+              <td><span style="font-family:var(--mono); font-size:12px;">92%</span></td>
+              <td><div class="trl-progress-row"><div class="trl-bar-wrap"><div class="trl-bar-fill" style="width:89%; background:var(--green);"></div></div><span style="font-size:11px; color:var(--text3);">8/9</span></div></td>
+              <td><span class="badge badge-success">Готово</span></td>
+            </tr>
+            <tr>
+              <td>Инжекционное литьё полимеров</td>
+              <td><span class="badge badge-info">Машиностроение</span></td>
+              <td><span class="trl-badge trl-9">9</span></td>
+              <td><span style="font-family:var(--mono); font-size:12px;">95%</span></td>
+              <td><div class="trl-progress-row"><div class="trl-bar-wrap"><div class="trl-bar-fill" style="width:100%; background:var(--green);"></div></div><span style="font-size:11px; color:var(--text3);">9/9</span></div></td>
+              <td><span class="badge badge-success">Внедрено</span></td>
+            </tr>
+            <tr>
+              <td>Сварка алюминиевых сплавов</td>
+              <td><span class="badge badge-info">Авиастроение</span></td>
+              <td><span class="trl-badge trl-7">7</span></td>
+              <td><span style="font-family:var(--mono); font-size:12px;">81%</span></td>
+              <td><div class="trl-progress-row"><div class="trl-bar-wrap"><div class="trl-bar-fill" style="width:78%; background:var(--amber);"></div></div><span style="font-size:11px; color:var(--text3);">7/9</span></div></td>
+              <td><span class="badge badge-warning">Пилот</span></td>
+            </tr>
+            <tr>
+              <td>Нанопокрытия защитных слоёв</td>
+              <td><span class="badge badge-purple">Электроника</span></td>
+              <td><span class="trl-badge trl-5">5</span></td>
+              <td><span style="font-family:var(--mono); font-size:12px;">69%</span></td>
+              <td><div class="trl-progress-row"><div class="trl-bar-wrap"><div class="trl-bar-fill" style="width:56%; background:var(--purple);"></div></div><span style="font-size:11px; color:var(--text3);">5/9</span></div></td>
+              <td><span class="badge badge-danger">Лаборатория</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== ASSESSMENT ===== -->
+    <div class="page" id="page-assess">
+      <div style="margin-bottom: 24px;">
+        <h1 style="font-size:20px; font-weight:700; margin-bottom:4px;">Оценка уровня готовности технологии</h1>
+        <p style="font-size:13px; color:var(--text2);">Пошаговый мастер ввода данных о продукции → автоматическая классификация ML-моделью</p>
+      </div>
+
+      <div class="wizard-steps" id="wizard-steps">
+        <div class="wizard-step active" id="ws1">
+          <div class="step-num">1</div>
+          <span class="step-label">Технология</span>
+        </div>
+        <div class="wizard-step" id="ws2">
+          <div class="step-num">2</div>
+          <span class="step-label">Характеристики</span>
+        </div>
+        <div class="wizard-step" id="ws3">
+          <div class="step-num">3</div>
+          <span class="step-label">Производство</span>
+        </div>
+        <div class="wizard-step" id="ws4">
+          <div class="step-num">4</div>
+          <span class="step-label">Результат</span>
+        </div>
+      </div>
+
+      <!-- Step 1 -->
+      <div id="step1" class="wizard-panel">
+        <div style="margin-bottom:20px;">
+          <h2 style="font-size:16px; font-weight:600; margin-bottom:6px;">Шаг 1: Идентификация технологии</h2>
+          <p style="font-size:13px; color:var(--text2);">Выберите существующую технологию или создайте новую запись</p>
+        </div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Наименование технологии</label>
+            <input type="text" id="tech-name" placeholder="Например: Аддитивное производство титановых деталей" value="Аддитивное производство Ti-деталей авиационного назначения">
+          </div>
+          <div class="form-group">
+            <label>Отрасль промышленности</label>
+            <select id="tech-industry">
+              <option value="avia" selected>Авиастроение</option>
+              <option value="machine">Машиностроение</option>
+              <option value="electronics">Электронная промышленность</option>
+              <option value="chem">Химическая промышленность</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Предприятие</label>
+            <input type="text" placeholder="Наименование предприятия" value="ПАО «АвиаМаш»">
+          </div>
+          <div class="form-group">
+            <label>Период измерения</label>
+            <input type="text" placeholder="ГГ.ММ" value="2024 Q4">
+          </div>
+          <div class="form-group">
+            <label>Код продукта</label>
+            <input type="text" placeholder="ОКПД2 или внутренний код" value="AVN-2024-Ti-001">
+          </div>
+        </div>
+        <div style="margin-top:24px; display:flex; justify-content:flex-end;">
+          <button class="btn btn-primary" onclick="nextStep(1)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div id="step2" class="wizard-panel" style="display:none;">
+        <div style="margin-bottom:20px;">
+          <h2 style="font-size:16px; font-weight:600; margin-bottom:6px;">Шаг 2: Технические характеристики продукции</h2>
+          <p style="font-size:13px; color:var(--text2);">Введите фактические и целевые значения параметров. Формула нормализации: П_норм = П_факт / П_цел</p>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Плотность факт. (г/см³)</label>
+            <input type="number" id="density_fact" value="4.43" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>Плотность цель. (г/см³)</label>
+            <input type="number" id="density_tgt" value="4.51" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>Прочность факт. (МПа)</label>
+            <input type="number" id="strength_fact" value="920" step="10">
+          </div>
+          <div class="form-group">
+            <label>Прочность цель. (МПа)</label>
+            <input type="number" id="strength_tgt" value="1000" step="10">
+          </div>
+          <div class="form-group">
+            <label>Шероховатость факт. (мкм)</label>
+            <input type="number" id="roughness_fact" value="6.3" step="0.1">
+            <span class="form-hint">Минимизируемый параметр: норм. = цель / факт</span>
+          </div>
+          <div class="form-group">
+            <label>Шероховатость цель. (мкм)</label>
+            <input type="number" id="roughness_tgt" value="3.2" step="0.1">
+          </div>
+          <div class="form-group">
+            <label>Пористость факт. (%)</label>
+            <input type="number" id="porosity_fact" value="0.8" step="0.1">
+            <span class="form-hint">Минимизируемый параметр</span>
+          </div>
+          <div class="form-group">
+            <label>Пористость цель. (%)</label>
+            <input type="number" id="porosity_tgt" value="0.5" step="0.1">
+          </div>
+        </div>
+        <div style="margin-top:24px; display:flex; justify-content:space-between;">
+          <button class="btn" onclick="prevStep(2)">← Назад</button>
+          <button class="btn btn-primary" onclick="nextStep(2)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div id="step3" class="wizard-panel" style="display:none;">
+        <div style="margin-bottom:20px;">
+          <h2 style="font-size:16px; font-weight:600; margin-bottom:6px;">Шаг 3: Производственные и экономические показатели</h2>
+          <p style="font-size:13px; color:var(--text2);">Данные о масштабе производства и экономических параметрах — ключевые признаки для классификации</p>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Годовой объём выпуска (ед.)</label>
+            <input type="number" id="annual_vol" value="15" step="1">
+          </div>
+          <div class="form-group">
+            <label>Кумулятивный выпуск (ед.)</label>
+            <input type="number" id="cumul_vol" value="45" step="1">
+          </div>
+          <div class="form-group">
+            <label>Доля изделий с 1-го предъявления (%)</label>
+            <input type="number" id="first_pass" value="73" step="1" min="0" max="100">
+          </div>
+          <div class="form-group">
+            <label>Коэффициент дефектности (%)</label>
+            <input type="number" id="defect_rate" value="8.2" step="0.1">
+          </div>
+          <div class="form-group">
+            <label>Себестоимость ед. (тыс. руб.)</label>
+            <input type="number" id="cost" value="1850" step="50">
+          </div>
+          <div class="form-group">
+            <label>Цена реализации (тыс. руб.)</label>
+            <input type="number" id="price" value="2400" step="50">
+          </div>
+          <div class="form-group">
+            <label>Снижение себестоимости, % г/г</label>
+            <input type="number" id="cost_red" value="12.5" step="0.5">
+          </div>
+          <div class="form-group">
+            <label>Средняя наработка на отказ (ч)</label>
+            <input type="number" id="mtbf" value="1200" step="100">
+          </div>
+        </div>
+        <div style="margin-top:24px; display:flex; justify-content:space-between;">
+          <button class="btn" onclick="prevStep(3)">← Назад</button>
+          <button class="btn btn-primary" onclick="runAssessment()">⚡ Рассчитать УГТ</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Result -->
+      <div id="step4" style="display:none;">
+        <div class="result-grid">
+          <div class="result-main">
+            <div class="result-label">Уровень готовности технологии</div>
+            <div class="result-trl-big" id="result-trl">6</div>
+            <div style="font-size:14px; font-weight:600; color:var(--text); margin-bottom:8px;" id="result-title">Демонстрация прототипа</div>
+            <div style="font-size:12px; color:var(--text2); line-height:1.6; margin-bottom:16px;" id="result-desc">Технология находится на стадии опытной партии. Изготовлены образцы в условиях, приближённых к релевантной среде.</div>
+            <div class="result-confidence">
+              <div class="conf-label">Уверенность модели: <strong id="result-conf">78%</strong></div>
+              <div class="conf-bar"><div class="conf-fill" id="result-conf-bar" style="width:78%;"></div></div>
+            </div>
+            <div style="margin-top:20px; display:flex; flex-direction:column; gap:8px;">
+              <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="saveResult()">💾 Сохранить результат</button>
+              <button class="btn" style="width:100%; justify-content:center;" onclick="resetWizard()">+ Новая оценка</button>
+            </div>
+          </div>
+          <div class="result-details">
+            <div class="detail-card">
+              <div class="detail-title">Вклад признаков в классификацию</div>
+              <div id="factor-list"></div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-title">Рекомендации по повышению УГТ</div>
+              <div id="rec-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CATALOG ===== -->
+    <div class="page" id="page-catalog">
+      <div style="margin-bottom: 24px;">
+        <h1 style="font-size:20px; font-weight:700; margin-bottom:4px;">Каталог технологий</h1>
+        <p style="font-size:13px; color:var(--text2);">Все технологии предприятия с историей оценок УГТ</p>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Технология</th>
+              <th>Отрасль</th>
+              <th>УГТ текущий</th>
+              <th>УГТ прошлый</th>
+              <th>Динамика</th>
+              <th>Рентабельность</th>
+              <th>Статус</th>
+            </tr>
+          </thead>
+          <tbody id="catalog-tbody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== MODEL ===== -->
+    <div class="page" id="page-model">
+      <div style="margin-bottom: 24px;">
+        <h1 style="font-size:20px; font-weight:700; margin-bottom:4px;">Модель машинного обучения</h1>
+        <p style="font-size:13px; color:var(--text2);">Архитектура, признаки и метрики модели градиентного бустинга (XGBoost)</p>
+      </div>
+
+      <div class="info-box">
+        Выбранный алгоритм — <strong>Градиентный бустинг (XGBoost)</strong> — показал наилучшее соотношение точности (84.7%) и полноты (82.1%) среди 6 протестированных алгоритмов. Архитектура: 200+ деревьев решений, max_depth=5, learning_rate=0.05, min_samples_split=20.
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="section-header"><div class="section-title">Сравнение алгоритмов ML</div></div>
+          <div class="chart-wrap">
+            <canvas id="chartAlgo"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="section-header"><div class="section-title">Важность признаков (Feature Importance)</div></div>
+          <div class="chart-wrap">
+            <canvas id="chartFeatures"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header"><div class="section-title">Архитектура алгоритма обработки данных</div></div>
+      <div style="background:var(--bg2); border:1px solid var(--border); border-radius:var(--r2); padding:24px; margin-bottom:28px;">
+        <div class="algo-flow">
+          <div class="algo-step">
+            <div class="s-num">01</div>
+            <div class="s-title">Загрузка данных</div>
+            <div class="s-sub">CSV / API / БД</div>
+          </div>
+          <div class="algo-arrow">→</div>
+          <div class="algo-step">
+            <div class="s-num">02</div>
+            <div class="s-title">Предобработка</div>
+            <div class="s-sub">Нормализация, пропуски</div>
+          </div>
+          <div class="algo-arrow">→</div>
+          <div class="algo-step highlight">
+            <div class="s-num">03</div>
+            <div class="s-title">Расчёт индикаторов</div>
+            <div class="s-sub">ИТС, КВ, масштаб</div>
+          </div>
+          <div class="algo-arrow">→</div>
+          <div class="algo-step highlight">
+            <div class="s-num">04</div>
+            <div class="s-title">Классификация УГТ</div>
+            <div class="s-sub">XGBoost → УГТ 1–9</div>
+          </div>
+          <div class="algo-arrow">→</div>
+          <div class="algo-step">
+            <div class="s-num">05</div>
+            <div class="s-title">Интерпретация</div>
+            <div class="s-sub">SHAP, вербализация</div>
+          </div>
+          <div class="algo-arrow">→</div>
+          <div class="algo-step">
+            <div class="s-num">06</div>
+            <div class="s-title">Рекомендации</div>
+            <div class="s-sub">Приоритеты улучшения</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header"><div class="section-title">Ключевой фрагмент кода (trl_classifier.py)</div></div>
+      <div class="code-block"><span class="code-kw">class</span> <span class="code-fn">TRLClassifier</span>:
+    <span class="code-str">"""Классификатор уровня готовности технологий"""</span>
+    
+    <span class="code-kw">def</span> <span class="code-fn">preprocess_data</span>(self, product_data: <span class="code-fn">Dict</span>) -> np.ndarray:
+        <span class="code-cmt"># Расчёт коэффициента вариации технических параметров</span>
+        tech_params = product_data.get(<span class="code-str">'technical_characteristics'</span>, {})
+        cv = np.std(values) / np.mean(values) * <span class="code-num">100</span>
+        
+        <span class="code-cmt"># Расчёт индекса технического совершенства (ИТС)</span>
+        ratios = [tech_params[k] / target_params[k] <span class="code-kw">for</span> k <span class="code-kw">in</span> tech_params]
+        technical_index = np.mean(ratios)
+        
+        <span class="code-kw">return</span> np.array([cv, cumulative_volume, technical_index,
+                         cost_reduction, first_pass_yield,
+                         annual_volume, profitability]).reshape(<span class="code-num">1</span>, -<span class="code-num">1</span>)
+
+    <span class="code-kw">def</span> <span class="code-fn">predict</span>(self, product_data: <span class="code-fn">Dict</span>) -> <span class="code-fn">Dict</span>:
+        features = self.preprocess_data(product_data)
+        trl_prediction = self.model.predict(features)[<span class="code-num">0</span>]
+        trl_probabilities = self.model.predict_proba(features)[<span class="code-num">0</span>]
+        confidence = np.sort(trl_probabilities)[::-<span class="code-num">1</span>][<span class="code-num">0</span>] - np.sort(trl_probabilities)[::-<span class="code-num">1</span>][<span class="code-num">1</span>]
+        <span class="code-kw">return</span> {<span class="code-str">'trl_level'</span>: int(trl_prediction), <span class="code-str">'confidence'</span>: float(confidence),
+                <span class="code-str">'interpretation'</span>: self._interpret_trl(int(trl_prediction)),
+                <span class="code-str">'recommendations'</span>: self._generate_recommendations(...)}</div>
+
+      <div style="margin-top:28px;" class="section-header"><div class="section-title">Таблица 4: Ранжирование признаков по информативности</div></div>
+      <div class="table-card">
+        <table class="compact">
+          <thead>
+            <tr><th>Ранг</th><th>Признак</th><th>Корреляция с УГТ</th><th>Критерий χ²</th><th>В модели</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Коэффициент вариации параметров</td><td style="font-family:var(--mono); color:var(--red);">-0.78</td><td>156.3</td><td><span class="badge badge-success">Да</span></td></tr>
+            <tr><td>2</td><td>Кумулятивный объём производства</td><td style="font-family:var(--mono); color:var(--green);">+0.72</td><td>142.7</td><td><span class="badge badge-success">Да</span></td></tr>
+            <tr><td>3</td><td>Индекс технического совершенства</td><td style="font-family:var(--mono); color:var(--green);">+0.69</td><td>135.4</td><td><span class="badge badge-success">Да</span></td></tr>
+            <tr><td>4</td><td>Снижение себестоимости, %</td><td style="font-family:var(--mono); color:var(--green);">+0.64</td><td>118.9</td><td><span class="badge badge-success">Да</span></td></tr>
+            <tr><td>5</td><td>Доля изделий с первого предъявления</td><td style="font-family:var(--mono); color:var(--green);">+0.61</td><td>112.5</td><td><span class="badge badge-success">Да</span></td></tr>
+            <tr><td>6</td><td>Годовой объём выпуска</td><td style="font-family:var(--mono); color:var(--green);">+0.58</td><td>98.7</td><td><span class="badge badge-success">Да</span></td></tr>
+            <tr><td>7</td><td>Рентабельность производства</td><td style="font-family:var(--mono); color:var(--green);">+0.52</td><td>87.3</td><td><span class="badge badge-success">Да</span></td></tr>
+            <tr><td>8</td><td>Количество модификаций продукта</td><td style="font-family:var(--mono); color:var(--text3);">+0.31</td><td>45.6</td><td><span class="badge badge-danger">Нет</span></td></tr>
+            <tr><td>9</td><td>Срок гарантии, месяцев</td><td style="font-family:var(--mono); color:var(--text3);">+0.28</td><td>38.2</td><td><span class="badge badge-danger">Нет</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== TESTING ===== -->
+    <div class="page" id="page-testing">
+      <div style="margin-bottom: 24px;">
+        <h1 style="font-size:20px; font-weight:700; margin-bottom:4px;">Результаты тестирования прототипа</h1>
+        <p style="font-size:13px; color:var(--text2);">Модульное, интеграционное, функциональное и нагрузочное тестирование</p>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Всего тестов</div>
+          <div class="kpi-value" style="color:var(--accent);">129</div>
+          <div class="kpi-delta up">Модульное тестирование</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Успешно / Провалено</div>
+          <div class="kpi-value" style="color:var(--green);">124 / <span style="color:var(--red);">5</span></div>
+          <div class="kpi-delta up">↑ 5 дефектов устранены</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Покрытие кода</div>
+          <div class="kpi-value" style="color:var(--amber);">86.6%</div>
+          <div class="kpi-delta neutral">Pytest + coverage.py</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Оценка юзабилити SUS</div>
+          <div class="kpi-value" style="color:var(--purple);">78.5</div>
+          <div class="kpi-delta up">Уровень «Good»</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab(this,'tab-unit')">Модульное</div>
+        <div class="tab" onclick="switchTab(this,'tab-func')">Функциональное</div>
+        <div class="tab" onclick="switchTab(this,'tab-perf')">Производительность</div>
+      </div>
+
+      <div id="tab-unit">
+        <div class="section-header"><div class="section-title">Таблица 15: Результаты модульного тестирования</div></div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Модуль</th><th>Тестов</th><th>Успешно</th><th>Провалено</th><th>Покрытие</th><th>Дефекты</th></tr></thead>
+            <tbody>
+              <tr><td>Предобработка данных</td><td>24</td><td class="v-correct">22</td><td class="v-wrong">2</td><td>87.3%</td><td>Некорректная обработка пропущенных значений</td></tr>
+              <tr><td>Расчёт индикаторов</td><td>18</td><td class="v-correct">18</td><td class="v-correct">0</td><td>92.1%</td><td>—</td></tr>
+              <tr><td>Классификация УГТ</td><td>15</td><td class="v-correct">14</td><td class="v-wrong">1</td><td>85.6%</td><td>Ошибка при пустом векторе признаков</td></tr>
+              <tr><td>Валидация данных</td><td>32</td><td class="v-correct">31</td><td class="v-wrong">1</td><td>94.8%</td><td>Недостаточная проверка диапазонов</td></tr>
+              <tr><td>Генерация рекомендаций</td><td>12</td><td class="v-correct">12</td><td class="v-correct">0</td><td>78.4%</td><td>—</td></tr>
+              <tr><td>API эндпоинты</td><td>28</td><td class="v-correct">27</td><td class="v-wrong">1</td><td>81.2%</td><td>Некорректный код ответа при ошибке</td></tr>
+              <tr style="font-weight:600;"><td>Итого</td><td>129</td><td class="v-correct">124</td><td class="v-wrong">5</td><td>86.6%</td><td>5 дефектов устранены</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tab-func" style="display:none;">
+        <div class="section-header"><div class="section-title">Таблица 16: Функциональное тестирование на эталонных примерах</div></div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Пример</th><th>Технология</th><th>Эксперт</th><th>Система</th><th>Результат</th><th>Отклик, с</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Аддитивное производство, опытные образцы</td><td><span class="trl-badge trl-6">6</span></td><td><span class="trl-badge trl-6">6</span></td><td><span class="badge badge-success">✓ Верно</span></td><td style="font-family:var(--mono);">1.8</td></tr>
+              <tr><td>2</td><td>Литьё алюминиевых деталей, мелкая серия</td><td><span class="trl-badge trl-7">7</span></td><td><span class="trl-badge trl-7">7</span></td><td><span class="badge badge-success">✓ Верно</span></td><td style="font-family:var(--mono);">1.6</td></tr>
+              <tr><td>3</td><td>Механообработка высокоточных деталей, массовое пр.</td><td><span class="trl-badge trl-9">9</span></td><td><span class="trl-badge trl-9">9</span></td><td><span class="badge badge-success">✓ Верно</span></td><td style="font-family:var(--mono);">1.9</td></tr>
+              <tr><td>4</td><td>Композитные материалы, лабораторная стадия</td><td><span class="trl-badge trl-4">4</span></td><td><span class="trl-badge trl-5">5</span></td><td><span class="badge badge-danger">✗ Ошибка</span></td><td style="font-family:var(--mono);">1.7</td></tr>
+              <tr><td>5</td><td>Термообработка стали, средняя серия</td><td><span class="trl-badge trl-8">8</span></td><td><span class="trl-badge trl-8">8</span></td><td><span class="badge badge-success">✓ Верно</span></td><td style="font-family:var(--mono);">1.8</td></tr>
+              <tr><td>6</td><td>Покрытие защитными слоями, отработка тех-ии</td><td><span class="trl-badge trl-6">6</span></td><td><span class="trl-badge trl-6">6</span></td><td><span class="badge badge-success">✓ Верно</span></td><td style="font-family:var(--mono);">1.5</td></tr>
+              <tr><td>7</td><td>Сварка алюминиевых сплавов</td><td><span class="trl-badge trl-7">7</span></td><td><span class="trl-badge trl-7">7</span></td><td><span class="badge badge-success">✓ Верно</span></td><td style="font-family:var(--mono);">1.7</td></tr>
+              <tr><td>8</td><td>Инжекционное литьё пластика, крупная серия</td><td><span class="trl-badge trl-9">9</span></td><td><span class="trl-badge trl-8">8</span></td><td><span class="badge badge-danger">✗ Ошибка</span></td><td style="font-family:var(--mono);">1.6</td></tr>
+              <tr><td>9</td><td>Химическая обработка поверхности</td><td><span class="trl-badge trl-7">7</span></td><td><span class="trl-badge trl-7">7</span></td><td><span class="badge badge-success">✓ Верно</span></td><td style="font-family:var(--mono);">1.9</td></tr>
+              <tr><td>10</td><td>Автоматизированная сборка, среднесерийное пр.</td><td><span class="trl-badge trl-8">8</span></td><td><span class="trl-badge trl-8">8</span></td><td><span class="badge badge-success">✓ Верно</span></td><td style="font-family:var(--mono);">1.8</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="info-box">
+          Точность функционального тестирования: <strong>80%</strong> (8 из 10). Два некорректных предсказания отличаются от экспертной оценки на один уровень УГТ. Среднее время отклика: <strong>1.73 с</strong> при требовании ≤ 3 с.
+        </div>
+      </div>
+
+      <div id="tab-perf" style="display:none;">
+        <div class="chart-card" style="margin-bottom:20px;">
+          <div class="section-header"><div class="section-title">Время отклика при нагрузке (Apache JMeter)</div></div>
+          <div class="chart-wrap chart-wrap-tall">
+            <canvas id="chartPerf"></canvas>
+          </div>
+        </div>
+        <div class="info-box">
+          Нагрузочное тестирование (Apache JMeter): при нагрузке до <strong>30 одновременных пользователей</strong> время отклика не превышает 5 с. При 50 пользователях деградация составляет ~47%. Прототип соответствует требованиям предприятия среднего масштаба.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== METHODOLOGY ===== -->
+    <div class="page" id="page-methodology">
+      <div style="margin-bottom: 24px;">
+        <h1 style="font-size:20px; font-weight:700; margin-bottom:4px;">Методология УГТ</h1>
+        <p style="font-size:13px; color:var(--text2);">Девятиуровневая шкала оценки технологической готовности · Минпромторг РФ · NASA</p>
+      </div>
+
+      <div class="info-box">
+        Методология УГТ разработана NASA в 1970-х гг. для оценки зрелости технологий — от фундаментальных исследований до серийного производства. В РФ закреплена методическими рекомендациями Минпромторга РФ (2023) и адаптирована для гражданских отраслей промышленности.
+      </div>
+
+      <div class="trl-levels" style="margin-bottom:28px;">
+        <div class="trl-level-card"><div class="num" style="color:var(--text3);">УГТ 1</div><div class="title">Базовые принципы</div><div class="desc">Теоретическое обоснование возможности технического решения, фундаментальные исследования.</div></div>
+        <div class="trl-level-card"><div class="num" style="color:var(--text3);">УГТ 2</div><div class="title">Концепция технологии</div><div class="desc">Формирование концепции и определение областей потенциального применения.</div></div>
+        <div class="trl-level-card"><div class="num" style="color:var(--purple);">УГТ 3</div><div class="title">Экспериментальное подтверждение</div><div class="desc">Экспериментальное подтверждение концепции в лабораторных условиях.</div></div>
+        <div class="trl-level-card"><div class="num" style="color:#79c0ff;">УГТ 4</div><div class="title">Лабораторная валидация</div><div class="desc">Валидация в лаборатории: функционирование отдельных компонентов или подсистем.</div></div>
+        <div class="trl-level-card"><div class="num" style="color:var(--green);">УГТ 5</div><div class="title">Приближённая среда</div><div class="desc">Валидация технологии в условиях, максимально приближённых к реальной среде эксплуатации.</div></div>
+        <div class="trl-level-card"><div class="num" style="color:var(--amber);">УГТ 6</div><div class="title">Релевантная среда</div><div class="desc">Технология демонстрируется в релевантной среде. Опытная партия изготовлена.</div></div>
+        <div class="trl-level-card"><div class="num" style="color:#f0883e;">УГТ 7</div><div class="title">Операционная среда</div><div class="desc">Технология в операционной среде, приближённой к условиям промышленности. Мелкая серия.</div></div>
+        <div class="trl-level-card"><div class="num" style="color:var(--red);">УГТ 8</div><div class="title">Квалификация</div><div class="desc">Технология проходит квалификацию посредством испытаний в реальных условиях применения.</div></div>
+        <div class="trl-level-card"><div class="num" style="color:var(--green);">УГТ 9</div><div class="title">Серийное производство</div><div class="desc">Технология доказала работоспособность и готова к крупносерийному коммерческому производству.</div></div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="section-header"><div class="section-title">Таблица 2: Индикаторы масштаба производства</div></div>
+          <div style="overflow-x:auto;">
+            <table class="compact" style="font-size:12px;">
+              <thead><tr><th>Показатель</th><th>УГТ 5–6</th><th>УГТ 7</th><th>УГТ 8</th><th>УГТ 9</th></tr></thead>
+              <tbody>
+                <tr><td>Годовой объём, ед.</td><td>1–10</td><td>10–50</td><td>50–200</td><td>&gt; 200</td></tr>
+                <tr><td>Кумулятивный выпуск</td><td>&lt; 20</td><td>20–100</td><td>100–500</td><td>&gt; 500</td></tr>
+                <tr><td>Темп роста, % г/г</td><td>&gt; 100</td><td>50–100</td><td>20–50</td><td>&lt; 20</td></tr>
+                <tr><td>Серийность</td><td>Опытная</td><td>Малая</td><td>Средняя</td><td>Крупная</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="section-header"><div class="section-title">Распределение тестового датасета (450 объектов)</div></div>
+          <div class="chart-wrap">
+            <canvas id="chartDataset"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ─── Navigation ───────────────────────────────────────────
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+  const labels = {dashboard:'Дашборд', assess:'Оценка УГТ', catalog:'Каталог технологий', model:'Модель ML', testing:'Тестирование', methodology:'Методология'};
+  document.getElementById('topbar-path').textContent = labels[id] || id;
+  if (id === 'catalog') buildCatalog();
+}
+
+// ─── Tabs ─────────────────────────────────────────────────
+function switchTab(el, tabId) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['tab-unit','tab-func','tab-perf'].forEach(t => {
+    const el2 = document.getElementById(t);
+    if (el2) el2.style.display = t === tabId ? 'block' : 'none';
+  });
+  if (tabId === 'tab-perf') initPerfChart();
+}
+
+// ─── Wizard ───────────────────────────────────────────────
+let currentStep = 1;
+function nextStep(from) {
+  document.getElementById('step' + from).style.display = 'none';
+  if (from < 3) {
+    currentStep = from + 1;
+    document.getElementById('step' + currentStep).style.display = 'block';
+    updateWizardSteps(currentStep);
+  }
+}
+function prevStep(from) {
+  document.getElementById('step' + from).style.display = 'none';
+  currentStep = from - 1;
+  document.getElementById('step' + currentStep).style.display = 'block';
+  updateWizardSteps(currentStep);
+}
+function updateWizardSteps(active) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('ws' + i);
+    el.classList.remove('active','done');
+    if (i < active) el.classList.add('done');
+    if (i === active) el.classList.add('active');
+  }
+}
+function resetWizard() {
+  currentStep = 1;
+  ['step2','step3','step4'].forEach(s => { const el = document.getElementById(s); if(el) el.style.display='none'; });
+  document.getElementById('step1').style.display = 'block';
+  updateWizardSteps(1);
+}
+
+function runAssessment() {
+  // Compute indicators from inputs
+  const d_f = +document.getElementById('density_fact').value;
+  const d_t = +document.getElementById('density_tgt').value;
+  const s_f = +document.getElementById('strength_fact').value;
+  const s_t = +document.getElementById('strength_tgt').value;
+  const r_f = +document.getElementById('roughness_fact').value;
+  const r_t = +document.getElementById('roughness_tgt').value;
+  const p_f = +document.getElementById('porosity_fact').value;
+  const p_t = +document.getElementById('porosity_tgt').value;
+  const annual = +document.getElementById('annual_vol').value;
+  const cumul = +document.getElementById('cumul_vol').value;
+  const fp = +document.getElementById('first_pass').value;
+  const cost_r = +document.getElementById('cost_red').value;
+  const cost = +document.getElementById('cost').value;
+  const price = +document.getElementById('price').value;
+
+  // Tech index (normalized average)
+  const ratios = [d_f/d_t, s_f/s_t, r_t/r_f, p_t/p_f]; // last two are inverted (minimize)
+  const techIndex = ratios.reduce((a,b)=>a+b,0)/ratios.length;
+  const cv = Math.abs(100 * (Math.max(...ratios)-Math.min(...ratios)) / (ratios.reduce((a,b)=>a+b,0)/ratios.length));
+  const profitability = (price - cost) / cost * 100;
+
+  // Heuristic TRL classification based on key indicators
+  let trl = 5;
+  if (cumul > 500 && fp > 92 && techIndex > 0.95 && cv < 3) trl = 9;
+  else if (cumul > 100 && fp > 85 && techIndex > 0.90 && cv < 6) trl = 8;
+  else if (cumul > 20 && fp > 78 && techIndex > 0.82 && annual > 10) trl = 7;
+  else if (cumul > 5 && techIndex > 0.72 && fp > 68) trl = 6;
+  else if (techIndex > 0.60) trl = 5;
+  else trl = 4;
+
+  const conf = Math.round(65 + Math.min(techIndex * 20, 25));
+  const interpretations = {
+    4: ['Лабораторная валидация', 'Технология валидирована в лабораторных условиях. Отдельные компоненты подтверждены экспериментально.'],
+    5: ['Приближённая среда', 'Валидация в условиях, близких к реальным. Интегрированные компоненты проверены.'],
+    6: ['Демонстрация прототипа', 'Изготовлена опытная партия изделий. Прототип демонстрируется в релевантной среде.'],
+    7: ['Операционные условия', 'Мелкосерийное производство запущено. Демонстрация в операционных условиях.'],
+    8: ['Квалификация завершена', 'Среднесерийное производство со стабильными характеристиками. Технология квалифицирована.'],
+    9: ['Серийное производство', 'Крупносерийное коммерческое производство. Технология полностью готова к внедрению.']
+  };
+
+  document.getElementById('result-trl').textContent = trl;
+  document.getElementById('result-title').textContent = interpretations[trl][0];
+  document.getElementById('result-desc').textContent = interpretations[trl][1];
+  document.getElementById('result-conf').textContent = conf + '%';
+  document.getElementById('result-conf-bar').style.width = conf + '%';
+
+  // Factors
+  const factors = [
+    {name: 'Коэфф. вариации (КВ)', val: Math.max(0, 100 - cv*3), color: '#f85149'},
+    {name: 'Кумулятивный объём', val: Math.min(100, cumul/5), color: '#58a6ff'},
+    {name: 'Индекс тех. совершенства', val: Math.round(techIndex*100), color: '#d2a8ff'},
+    {name: 'Снижение себестоимости', val: Math.min(100, cost_r*4), color: '#3fb950'},
+    {name: 'Доля с 1-го предъявления', val: fp, color: '#f0883e'},
+    {name: 'Рентабельность', val: Math.min(100, profitability*2), color: '#39d353'},
+  ];
+  document.getElementById('factor-list').innerHTML = factors.map(f =>
+    `<div class="factor-row">
+      <span class="factor-name">${f.name}</span>
+      <div class="factor-bar-wrap"><div class="factor-bar" style="width:${Math.round(f.val)}%; background:${f.color};"></div></div>
+      <span class="factor-val">${Math.round(f.val)}%</span>
+    </div>`
+  ).join('');
+
+  // Recommendations
+  const recs = [];
+  if (cv > 10) recs.push('Повысить стабильность технологических процессов. Цель: CV < 5%.');
+  if (cumul < 100) recs.push(`Увеличить кумулятивный объём производства (текущий: ${cumul} ед.). Для УГТ 9 требуется > 500 ед.`);
+  if (techIndex < 0.9) recs.push(`Улучшить технические характеристики. ИТС = ${techIndex.toFixed(2)}, цель > 0.95.`);
+  if (profitability < 15 && trl >= 7) recs.push(`Оптимизировать технологические процессы. Рентабельность: ${profitability.toFixed(1)}%, цель > 20%.`);
+  if (fp < 85) recs.push(`Снизить дефектность. Доля с 1-го предъявления: ${fp}%, цель > 85%.`);
+  if (!recs.length) recs.push('Технология демонстрирует характеристики, соответствующие текущему УГТ. Продолжить совершенствование.');
+
+  document.getElementById('rec-list').innerHTML = recs.map(r =>
+    `<div class="rec-item"><svg class="rec-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>${r}</div>`
+  ).join('');
+
+  document.getElementById('step3').style.display = 'none';
+  document.getElementById('step4').style.display = 'block';
+  updateWizardSteps(4);
+}
+
+function saveResult() {
+  const trl = document.getElementById('result-trl').textContent;
+  alert(`✓ Результат сохранён в базу данных.\nТехнология получила УГТ = ${trl}.\nЗапись добавлена в портфель предприятия.`);
+}
+
+// ─── Catalog ──────────────────────────────────────────────
+const catalogData = [
+  {id:1, name:'Аддитивное производство Ti-деталей', industry:'Авиастроение', trl:6, prev:5, profit:18.5, status:'warning'},
+  {id:2, name:'Термообработка стальных сплавов', industry:'Машиностроение', trl:8, prev:7, profit:24.1, status:'success'},
+  {id:3, name:'Инжекционное литьё полимеров', industry:'Машиностроение', trl:9, prev:9, profit:31.2, status:'success'},
+  {id:4, name:'Сварка алюминиевых сплавов', industry:'Авиастроение', trl:7, prev:6, profit:21.3, status:'warning'},
+  {id:5, name:'Нанопокрытия защитных слоёв', industry:'Электроника', trl:5, prev:4, profit:12.8, status:'danger'},
+  {id:6, name:'Химическая обработка поверхности', industry:'Химическая', trl:7, prev:7, profit:19.7, status:'warning'},
+  {id:7, name:'Механообработка высокоточных деталей', industry:'Машиностроение', trl:9, prev:8, profit:28.4, status:'success'},
+  {id:8, name:'Лазерная резка металлов', industry:'Машиностроение', trl:8, prev:8, profit:22.6, status:'success'},
+  {id:9, name:'Автоматизированная сборка', industry:'Электроника', trl:8, prev:7, profit:20.1, status:'success'},
+  {id:10, name:'Литьё алюминиевых деталей', industry:'Машиностроение', trl:7, prev:6, profit:17.9, status:'warning'},
+  {id:11, name:'Композитные материалы УУКМ', industry:'Авиастроение', trl:4, prev:3, profit:8.2, status:'danger'},
+  {id:12, name:'Пайка высокотемпературная', industry:'Электроника', trl:6, prev:5, profit:15.4, status:'warning'},
+];
+
+function buildCatalog() {
+  const tbody = document.getElementById('catalog-tbody');
+  tbody.innerHTML = catalogData.map(r => {
+    const delta = r.trl - r.prev;
+    const deltaStr = delta > 0 ? `<span style="color:var(--green);">↑ +${delta}</span>` : delta < 0 ? `<span style="color:var(--red);">↓ ${delta}</span>` : '<span style="color:var(--text3);">→ 0</span>';
+    const statusMap = {success:'badge-success', warning:'badge-warning', danger:'badge-danger'};
+    const statusLabel = {success:'Активна', warning:'Разработка', danger:'Лаборатория'};
+    return `<tr>
+      <td style="color:var(--text3); font-family:var(--mono); font-size:11px;">#${r.id}</td>
+      <td>${r.name}</td>
+      <td><span class="badge badge-info" style="font-size:11px;">${r.industry}</span></td>
+      <td><span class="trl-badge trl-${r.trl}">${r.trl}</span></td>
+      <td><span class="trl-badge trl-${r.prev}" style="opacity:0.6;">${r.prev}</span></td>
+      <td>${deltaStr}</td>
+      <td style="font-family:var(--mono); font-size:12px; color:${r.profit>20?'var(--green)':r.profit>15?'var(--amber)':'var(--red)'};">${r.profit}%</td>
+      <td><span class="badge ${statusMap[r.status]}">${statusLabel[r.status]}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── Charts ───────────────────────────────────────────────
+const GRID = { color: 'rgba(48,54,61,0.8)' };
+const TICK = { color: '#8b949e', font: { size: 11, family: "'Golos Text', sans-serif" } };
+
+function initCharts() {
+  // Distribution
+  const ctx1 = document.getElementById('chartDistrib').getContext('2d');
+  new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: ['УГТ 3–4', 'УГТ 5', 'УГТ 6', 'УГТ 7', 'УГТ 8', 'УГТ 9'],
+      datasets: [{
+        label: 'Объектов',
+        data: [44, 85, 97, 113, 74, 37],
+        backgroundColor: ['#1f1535','#1a2a20','#2a2010','#1a2a18','#2a1010','#0d2818'],
+        borderColor: ['#bc8cff','#3fb950','#d29922','#56d364','#f85149','#39d353'],
+        borderWidth: 1, borderRadius: 4,
+      }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{x:{grid:GRID,ticks:TICK},y:{grid:GRID,ticks:TICK}} }
+  });
+
+  // Dynamic
+  const ctx2 = document.getElementById('chartDynamic').getContext('2d');
+  new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels: ['Q1 22','Q2 22','Q3 22','Q4 22','Q1 23','Q2 23','Q3 23','Q4 23','Q1 24','Q2 24','Q3 24','Q4 24'],
+      datasets: [{
+        label: 'Средний УГТ',
+        data: [4.8,5.0,5.1,5.2,5.5,5.6,5.8,6.0,6.1,6.2,6.3,6.4],
+        borderColor: '#58a6ff', backgroundColor: 'rgba(88,166,255,0.1)',
+        borderWidth: 2, pointRadius: 3, fill: true, tension: 0.4,
+      }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{x:{grid:GRID,ticks:TICK},y:{grid:GRID,ticks:TICK,min:4,max:9}} }
+  });
+
+  // Sectors
+  const ctx3 = document.getElementById('chartSectors').getContext('2d');
+  new Chart(ctx3, {
+    type: 'bar',
+    data: {
+      labels: ['Машиностроение','Электронная промышленность','Авиастроение','Химическая промышленность'],
+      datasets: [
+        {label:'УГТ 3–4', data:[12,18,8,6], backgroundColor:'rgba(188,140,255,0.7)'},
+        {label:'УГТ 5', data:[28,32,15,10], backgroundColor:'rgba(63,185,80,0.7)'},
+        {label:'УГТ 6', data:[38,29,22,8], backgroundColor:'rgba(210,153,34,0.7)'},
+        {label:'УГТ 7', data:[45,34,28,6], backgroundColor:'rgba(88,166,255,0.7)'},
+        {label:'УГТ 8', data:[32,18,24,0], backgroundColor:'rgba(248,81,73,0.7)'},
+        {label:'УГТ 9', data:[15,9,13,0], backgroundColor:'rgba(57,211,83,0.7)'},
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#8b949e',font:{size:11}}}},
+      scales:{x:{stacked:true,grid:GRID,ticks:TICK},y:{stacked:true,grid:GRID,ticks:TICK}} }
+  });
+
+  // ML algo comparison
+  const ctx4 = document.getElementById('chartAlgo').getContext('2d');
+  new Chart(ctx4, {
+    type: 'bar',
+    data: {
+      labels: ['Лог.регрессия','SVM','Дерево','Случ.лес','Grad.Boost','Нейросеть'],
+      datasets: [
+        {label:'Точность, %', data:[72.3,78.6,74.8,82.4,84.7,81.9], backgroundColor:'rgba(88,166,255,0.7)', borderRadius:3},
+        {label:'Полнота, %', data:[68.5,75.2,71.9,79.8,82.1,78.6], backgroundColor:'rgba(63,185,80,0.7)', borderRadius:3},
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#8b949e',font:{size:11}}}},
+      scales:{x:{grid:GRID,ticks:TICK},y:{grid:GRID,ticks:TICK,min:60,max:90}} }
+  });
+
+  // Feature importance
+  const ctx5 = document.getElementById('chartFeatures').getContext('2d');
+  new Chart(ctx5, {
+    type: 'bar',
+    data: {
+      labels: ['КВ пар.', 'Кум.объём', 'ИТС', 'Себест.↓', 'Доля 1-й', 'Год.объём', 'Рент-ть'],
+      datasets: [{
+        label: 'Важность',
+        data: [0.78,0.72,0.69,0.64,0.61,0.58,0.52],
+        backgroundColor: ['#f85149','#58a6ff','#d2a8ff','#3fb950','#f0883e','#79c0ff','#39d353'],
+        borderRadius: 4,
+      }]
+    },
+    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:GRID,ticks:TICK},y:{grid:GRID,ticks:TICK}} }
+  });
+
+  // Dataset by TRL
+  const ctx6 = document.getElementById('chartDataset')?.getContext('2d');
+  if (ctx6) new Chart(ctx6, {
+    type: 'doughnut',
+    data: {
+      labels: ['УГТ 3–4 (9.8%)','УГТ 5 (18.9%)','УГТ 6 (21.6%)','УГТ 7 (25.1%)','УГТ 8 (16.4%)','УГТ 9 (8.2%)'],
+      datasets: [{
+        data: [44,85,97,113,74,37],
+        backgroundColor: ['#1f1535','#1a2a20','#2a2010','rgba(88,166,255,0.5)','rgba(248,81,73,0.5)','#0d2818'],
+        borderColor: ['#bc8cff','#3fb950','#d29922','#58a6ff','#f85149','#39d353'],
+        borderWidth: 2,
+      }]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'right',labels:{color:'#8b949e',font:{size:11},boxWidth:12}}} }
+  });
+}
+
+let perfChartDone = false;
+function initPerfChart() {
+  if (perfChartDone) return;
+  perfChartDone = true;
+  const ctx = document.getElementById('chartPerf').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['1','5','10','15','20','25','30','35','40','50'],
+      datasets: [{
+        label: 'Время отклика (сек)',
+        data: [1.7, 1.8, 2.0, 2.2, 2.5, 2.9, 3.4, 4.1, 5.2, 7.8],
+        borderColor: '#f0883e', backgroundColor: 'rgba(240,136,62,0.1)',
+        borderWidth: 2, fill: true, tension: 0.4,
+      },{
+        label: 'Требование (3 сек)',
+        data: [3,3,3,3,3,3,3,3,3,3],
+        borderColor: '#f85149', borderDash: [6,4], borderWidth: 1.5, fill: false, pointRadius: 0,
+      }]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#8b949e',font:{size:11}}}},
+      scales:{
+        x:{grid:GRID,ticks:TICK,title:{display:true,text:'Одновременных пользователей',color:'#8b949e',font:{size:11}}},
+        y:{grid:GRID,ticks:TICK,title:{display:true,text:'Время отклика, с',color:'#8b949e',font:{size:11}}}
+      }
+    }
+  });
+}
+
+// ─── Init ─────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  initCharts();
+  buildCatalog();
+});
+</script>
+</body>
+</html>
